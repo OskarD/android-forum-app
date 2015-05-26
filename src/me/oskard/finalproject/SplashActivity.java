@@ -338,7 +338,7 @@ public class SplashActivity extends Activity {
 	    	name = storedUsername;
 	    	
 	    	try {
-				yourJsonStringUrl = "http://oskard.me/forum/app_login.php?name=" + URLEncoder.encode(name, "UTF-8");
+				yourJsonStringUrl = "http://oskard.me/forum/mobile/app_login.php?name=" + URLEncoder.encode(name, "UTF-8");
 			} catch (UnsupportedEncodingException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
