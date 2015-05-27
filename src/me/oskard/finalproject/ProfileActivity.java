@@ -17,6 +17,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,6 +39,9 @@ public class ProfileActivity extends Activity {
 	
 	SharedPreferences.Editor
 		editor;
+
+	public ImageView
+		avatar;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +59,7 @@ public class ProfileActivity extends Activity {
 		title = (TextView) findViewById(R.id.profile_title);
 		text = (TextView) findViewById(R.id.profile_text);
 		autoLoadButton = (Button) findViewById(R.id.enable_autoload_button);
+		avatar = (ImageView) findViewById(R.id.imgAvatar);
 		
 		storedLoginString = getStoredLoginString();
 		
@@ -175,91 +180,28 @@ public class ProfileActivity extends Activity {
 	}
 	
 	public class AsyncTaskParseJson extends AsyncTask<String, String, String> {
-		 
-	    final String TAG = "AsyncTaskParseJson.java";
-	    
-	    // Node names from JSON
-		private static final String
-			TAG_ID = "id",
-			TAG_NAME = "name",
-			TAG_LOGIN_STRING = "loginString",
-			TAG_EMAIL = "email",
-			TAG_DEFAULT_GROUP = "defaultGroup",
-			TAG_AVATAR = "avatar";
-	
-	    String name = username;
-	    String yourJsonStringUrl;
-	    
-	    // contacts JSONArray
-	    JSONArray dataJsonArr = null;
-	    
+
 	    public ProfileActivity ProfileActivity;
-	    
+
 	    public AsyncTaskParseJson(ProfileActivity activity) {
 	    	ProfileActivity = activity;
 	    }
-	
+
 	    @Override
 	    protected void onPreExecute() {}
 	
 	    @Override
 	    protected String doInBackground(String... arg0) {
-	    	Log.d("ProfileActivity", "Started background process");
-	    	name = username;
-	    	
-	    	try {
-				yourJsonStringUrl = "http://oskard.me/forum/app_login.php?name=" + URLEncoder.encode(name, "UTF-8");
-			} catch (UnsupportedEncodingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-	    	
-	    	Log.d("ProfileActivity", "url: " + yourJsonStringUrl);
-	
-	        // instantiate our json parser
-			JsonParser jParser = new JsonParser();
+	    	Log.d("ProfileActivity", "Started background process to load user");
 
-			// get json string from url
-			JSONObject json = jParser.getJSONFromUrl(yourJsonStringUrl);
+			final User loadedUser = User.getUserWithName(username);
 
-			Log.d("ProfileActivity", "JSON: " + json.toString());
-			
-			// Attempt login
-			Log.d("ProfileActivity", "Username entered: " + name);
-			
-			String result;
-			
-			try {
-				Log.d("ProfileActivity", "Username returned: " + json.getString(TAG_NAME));
-				
-				final User user = new User(
-						json.getInt(TAG_ID),
-						json.getString(TAG_NAME),
-						json.getString(TAG_LOGIN_STRING),
-						json.getString(TAG_EMAIL),
-						json.getInt(TAG_DEFAULT_GROUP),
-						json.optInt(TAG_AVATAR)
-				);
-				
-				loginString = user.getLoginString();
-				
-				runOnUiThread(new Runnable() {
-				     @Override
-				     public void run() {
-				    	 ProfileActivity.finishLoadingProfile(user);
-				    }
-				});
-				
-				Log.d("ProfileActivity", "User loaded: " + user.toString());
-			} catch (JSONException e) {
-				Log.d("ProfileActivity", "The user could not be loaded. Probably doesn't exist, or there is no internet connection");
-				runOnUiThread(new Runnable() {
-				     @Override
-				     public void run() {
-						ProfileActivity.finishLoadingProfile(null);
-				    }
-				});
-			}
+			runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					ProfileActivity.finishLoadingProfile(loadedUser);
+				}
+			});
 			
 	        return null;
 	    }

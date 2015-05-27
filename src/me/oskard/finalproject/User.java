@@ -6,9 +6,20 @@ import java.net.URLEncoder;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.Activity;
 import android.util.Log;
 
 public class User {
+
+	// Node names from JSON
+	public static final String
+			TAG_ID = "id",
+			TAG_NAME = "name",
+			TAG_LOGIN_STRING = "loginString",
+			TAG_EMAIL = "email",
+			TAG_DEFAULT_GROUP = "defaultGroup",
+			TAG_AVATAR = "avatar";
+
 	private int
 		id,
 		defaultGroup,
@@ -71,7 +82,6 @@ public class User {
 
 	public User(int id, String name, String password,
 			String email, int defaultGroup, int avatar) {
-		super();
 		this.id = id;
 		this.defaultGroup = defaultGroup;
 		this.name = name;
@@ -80,47 +90,46 @@ public class User {
 		this.avatar = avatar;
 	}
 
-	/**
-	 * @todo Clean up or use
-	 */
-	public static User loadUserWithName(String name) {
+	public static User getUserWithName(String name) {
+
+		Log.v("User", "loadUserWithName started with name: [" + name + "]");
+
 		String url = "";
-		
+
 		try {
-			url = "http://oskard.me/forum/app/get_user.php?name=" + URLEncoder.encode(name, "UTF-8");
-			Log.d("User", "url: " + url);
+			url = "http://oskard.me/forum/mobile/app_login.php?name=" + URLEncoder.encode(name, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Log.e("User", "Encoding is unsupported", e);
 		}
+
+		Log.i("User", "url: " + url);
 		
 		JsonParser jParser = new JsonParser();
 		JSONObject json = jParser.getJSONFromUrl(url);
+
+		Log.i("User", "json result: " + json.toString());
+
+		String loginString;
+		User user = null;
+
 		try {
-			Log.d("User", json.toString(2));
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-		
-		User user = new User(0, "", "", "", 0, 0);
-		/*
-		try {
-			// Get JSON array
-			JSONObject c = json.get
-			
-			// Create new user
+			Log.i("User", "Username returned: " + json.getString(TAG_NAME));
+
 			user = new User(
-				json.getInt(TAG_ID),
-				json.getString(TAG_NAME),
-				json.getString(TAG_LOGIN_STRING),
-				json.getString(TAG_EMAIL),
-				json.getInt(TAG_DEFAULT_GROUP)
+					json.getInt(TAG_ID),
+					json.getString(TAG_NAME),
+					json.getString(TAG_LOGIN_STRING),
+					json.getString(TAG_EMAIL),
+					json.getInt(TAG_DEFAULT_GROUP),
+					json.optInt(TAG_AVATAR)
 			);
-			
+
 		} catch (JSONException e) {
-			e.printStackTrace();
-		}*/
-		
+			Log.e("User", "Failed to parse json string: " + json.toString(), e);
+		}
+
+		Log.d("User", "User loaded: " + user.toString());
+
 		return user;
 	}
 }

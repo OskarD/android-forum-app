@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- From: file:/E:/FinalProject/res/values/colors.xml -->
+    <!-- From: file:/E:/AndroidForumApp/res/values/colors.xml -->
     <eat-comment/>
     <color name="background_color">#0099cc</color>
     <color name="black_overlay">#66000000</color>
     <color name="text_color">#CCECF8</color>
     <declare-styleable name="ButtonBarContainerTheme"><attr format="reference" name="metaButtonBarStyle"/><attr format="reference" name="metaButtonBarButtonStyle"/></declare-styleable>
-    <!-- From: file:/E:/FinalProject/res/values/dimens.xml -->
+    <!-- From: file:/E:/AndroidForumApp/res/values/dimens.xml -->
     <eat-comment/>
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
-    <!-- From: file:/E:/FinalProject/res/values/strings.xml -->
+    <!-- From: file:/E:/AndroidForumApp/res/values/strings.xml -->
     <eat-comment/>
     <string name="about">About</string>
     <string name="about_text">Written by: Oskar Danielsson\n\nThis is an app that connects to my forum\'s database. You can visit the full page here:</string>
@@ -39,7 +39,7 @@
     <string name="title_activity_profile">Profile</string>
     <string name="title_activity_register">Register</string>
     <string name="username">Username</string>
-    <!-- From: file:/E:/FinalProject/res/values/styles.xml -->
+    <!-- From: file:/E:/AndroidForumApp/res/values/styles.xml -->
     <eat-comment/>
     <style name="AppBaseTheme" parent="android:Theme.Light">
         <!--
