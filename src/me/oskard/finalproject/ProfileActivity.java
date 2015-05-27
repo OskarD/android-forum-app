@@ -139,6 +139,8 @@ public class ProfileActivity extends Activity {
 		text.setText(
 				"E-mail: " + user.getEmail()
 		);
+
+		avatar.setImageBitmap(user.getAvatarData());
 	}
 	
 	public void setStoredUsername() {

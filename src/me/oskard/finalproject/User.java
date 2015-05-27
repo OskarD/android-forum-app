@@ -7,6 +7,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Base64;
 import android.util.Log;
 
 public class User {
@@ -18,7 +21,8 @@ public class User {
 			TAG_LOGIN_STRING = "loginString",
 			TAG_EMAIL = "email",
 			TAG_DEFAULT_GROUP = "defaultGroup",
-			TAG_AVATAR = "avatar";
+			TAG_AVATAR = "avatar",
+			TAG_AVATAR_DATA = "avatarData";
 
 	private int
 		id,
@@ -29,6 +33,9 @@ public class User {
 		name,
 		loginString,
 		email;
+
+	private Bitmap
+		avatarData;
 
 	public int getId() {
 		return id;
@@ -78,16 +85,36 @@ public class User {
 		this.avatar = avatar;
 	}
 
+	public Bitmap getAvatarData() {
+		return avatarData;
+	}
+
+	public void setAvatarData(Bitmap avatarData) {
+		this.avatarData = avatarData;
+	}
+
 	public User() {}
 
 	public User(int id, String name, String password,
-			String email, int defaultGroup, int avatar) {
+				String email, int defaultGroup, int avatar) {
 		this.id = id;
 		this.defaultGroup = defaultGroup;
 		this.name = name;
 		this.loginString = password;
 		this.email = email;
 		this.avatar = avatar;
+	}
+
+	public User(int id, String name, String password,
+			String email, int defaultGroup, int avatar,
+				Bitmap avatarData) {
+		this.id = id;
+		this.defaultGroup = defaultGroup;
+		this.name = name;
+		this.loginString = password;
+		this.email = email;
+		this.avatar = avatar;
+		this.avatarData = avatarData;
 	}
 
 	public static User getUserWithName(String name) {
@@ -115,13 +142,18 @@ public class User {
 		try {
 			Log.i("User", "Username returned: " + json.getString(TAG_NAME));
 
+			String avatar = json.optString(TAG_AVATAR_DATA);
+			byte[] decodedString = Base64.decode(avatar, Base64.DEFAULT);
+			Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+
 			user = new User(
 					json.getInt(TAG_ID),
 					json.getString(TAG_NAME),
 					json.getString(TAG_LOGIN_STRING),
 					json.getString(TAG_EMAIL),
 					json.getInt(TAG_DEFAULT_GROUP),
-					json.optInt(TAG_AVATAR)
+					json.optInt(TAG_AVATAR),
+					decodedByte
 			);
 
 		} catch (JSONException e) {
