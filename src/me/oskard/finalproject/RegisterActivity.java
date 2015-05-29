@@ -1,12 +1,5 @@
 package me.oskard.finalproject;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,7 +11,17 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+
 public class RegisterActivity extends Activity {
+
+	final String TAG = "RegisterActivity.java";
+
 	public EditText
 		username,
 		email,
@@ -37,7 +40,7 @@ public class RegisterActivity extends Activity {
 	}
 	
 	public void goLoginPressed(View v) {
-		Log.d("RegisterActivity", "Login text pressed, starting LoginActivity and finishing RegisterActivity...");
+		Log.d(TAG, "Login text pressed, starting LoginActivity and finishing RegisterActivity...");
 		
 		// Load register activity
 		Intent intent = new Intent(this, LoginActivity.class);
@@ -46,7 +49,7 @@ public class RegisterActivity extends Activity {
 	}
 	
 	public void registerPressed(View v) {
-		Log.d("RegisterActivity", "Register-button pressed");
+		Log.d(TAG, "Register-button pressed");
 		
 		username.setEnabled(false);
 		email.setEnabled(false);
@@ -64,7 +67,7 @@ public class RegisterActivity extends Activity {
 	}
 	
 	public boolean verifyInput() {
-		Log.d("RegisterActivity", "verifyInput() called");
+		Log.d(TAG, "verifyInput() called");
 		if(username.getText().length() < 3) {
 			Toast.makeText(this, "Your username needs to be longer than 3 characters", Toast.LENGTH_LONG).show();
 			return false;
@@ -131,19 +134,22 @@ public class RegisterActivity extends Activity {
 			InputStream in = new BufferedInputStream(urlConnection.getInputStream());
 			in.read();
 			urlConnection.disconnect();
+
+			// Registered.
+			Log.d(TAG, "User registered: " + nameString);
+			Toast.makeText(this, "Account has been registered!", Toast.LENGTH_LONG).show();
+
+			Intent intent = new Intent(this, LoginActivity.class);
+			intent.putExtra("stored_username", username.getText().toString());
+			startActivity(intent);
+
+			finish();
+			return true;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
-		// Registered.
-		Toast.makeText(this, "Account has been registered!", Toast.LENGTH_LONG).show();
-		
-		Intent intent = new Intent(this, LoginActivity.class);
-		intent.putExtra("stored_username", username.getText().toString());
-		startActivity(intent);
-		
-		finish();
-		return true;
+		return false;
 	}
 }

@@ -1,18 +1,19 @@
 package me.oskard.finalproject;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Base64;
 import android.util.Log;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 public class User {
+
+	final static String TAG = "User.java";
 
 	// Node names from JSON
 	public static final String
@@ -119,28 +120,28 @@ public class User {
 
 	public static User getUserWithName(String name) {
 
-		Log.v("User", "loadUserWithName started with name: [" + name + "]");
+		Log.v(TAG, "loadUserWithName started with name: [" + name + "]");
 
 		String url = "";
 
 		try {
 			url = "http://oskard.me/forum/mobile/app_login.php?name=" + URLEncoder.encode(name, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
-			Log.e("User", "Encoding is unsupported", e);
+			Log.e(TAG, "Encoding is unsupported", e);
 		}
 
-		Log.i("User", "url: " + url);
+		Log.i(TAG, "url: " + url);
 		
 		JsonParser jParser = new JsonParser();
 		JSONObject json = jParser.getJSONFromUrl(url);
 
-		Log.i("User", "json result: " + json.toString());
+		Log.i(TAG, "json result: " + json.toString());
 
 		String loginString;
 		User user = null;
 
 		try {
-			Log.i("User", "Username returned: " + json.getString(TAG_NAME));
+			Log.i(TAG, "Username returned: " + json.getString(TAG_NAME));
 
 			String avatar = json.optString(TAG_AVATAR_DATA);
 			byte[] decodedString = Base64.decode(avatar, Base64.DEFAULT);
@@ -157,10 +158,10 @@ public class User {
 			);
 
 		} catch (JSONException e) {
-			Log.e("User", "Failed to parse json string: " + json.toString(), e);
+			Log.e(TAG, "Failed to parse json string: " + json.toString(), e);
 		}
 
-		Log.d("User", "User loaded: " + user.toString());
+		Log.d(TAG, "User loaded: " + user.toString());
 
 		return user;
 	}

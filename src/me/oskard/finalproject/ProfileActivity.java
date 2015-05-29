@@ -1,15 +1,7 @@
 package me.oskard.finalproject;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,6 +14,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class ProfileActivity extends Activity {
+
+	final String TAG = "ProfileActivity.java";
+
 	public TextView
 		title,
 		text;
@@ -33,24 +28,18 @@ public class ProfileActivity extends Activity {
 		username,
 		loginString,
 		storedLoginString;
-	
-	SharedPreferences 
-		mySharedPreferences;
-	
-	SharedPreferences.Editor
-		editor;
 
 	public ImageView
 		avatar;
+
+	private AppSharedPreferences
+			appSharedPreferences = new AppSharedPreferences();
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		Log.d("ProfileActivity", "onCreate start");
+		Log.d(TAG, "onCreate start");
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_profile);
-		
-		mySharedPreferences = getSharedPreferences("mySharedPreferences", Activity.MODE_PRIVATE);
-		editor = mySharedPreferences.edit();
 		
 		Intent intent = getIntent();
 		
@@ -90,7 +79,7 @@ public class ProfileActivity extends Activity {
 	}
 	
 	public void logout(View v) {
-		Log.d("ProfileActivity", "Log Out button clicked");
+		Log.d(TAG, "Log Out button clicked");
 		
 		removeStoredUsername();
 		removeStoredLoginString();
@@ -99,7 +88,7 @@ public class ProfileActivity extends Activity {
 	}
 	
 	public void toggleAutoLoad(View v) {
-		Log.d("ProfileActivity", "Autoload button clicked");
+		Log.d(TAG, "Autoload button clicked");
 		
 		if(storedLoginString.length() == 0) {
 			setStoredUsername();
@@ -107,13 +96,13 @@ public class ProfileActivity extends Activity {
 			
 			Toast.makeText(ProfileActivity.this, "You have activated automagic(!) login", Toast.LENGTH_LONG).show();
 			
-			Log.d("ProfileActivity", "loginString stored");
+			Log.d(TAG, "loginString stored");
 		} else {
 			removeStoredLoginString();
 			
 			Toast.makeText(ProfileActivity.this, "You have disabled automagic(!) login", Toast.LENGTH_LONG).show();
 			
-			Log.d("ProfileActivity", "loginString removed");
+			Log.d(TAG, "loginString removed");
 		}
 		
 		storedLoginString = getStoredLoginString();
@@ -128,14 +117,14 @@ public class ProfileActivity extends Activity {
 	}
 	
 	public void loadProfile() {
-		Log.d("ProfileActivity", "Loading profile...");
+		Log.d(TAG, "Loading profile...");
 		title.setText(username);
 		text.setText("Loading...");
 		new AsyncTaskParseJson(this).execute();
 	}
 	
 	public void finishLoadingProfile(User user) {
-		Log.d("ProfileActivity", "Finished loading profile");
+		Log.d(TAG, "Finished loading profile");
 		text.setText(
 				"E-mail: " + user.getEmail()
 		);
@@ -144,23 +133,23 @@ public class ProfileActivity extends Activity {
 	}
 	
 	public void setStoredUsername() {
-		editor.putString("stored_username", getStoredUsername());
-		editor.commit();
+		appSharedPreferences.getSharedPreferencesEditor(this).putString("stored_username", getStoredUsername());
+		appSharedPreferences.getSharedPreferencesEditor(this).commit();
 	}
 	
 	public void setStoredLoginString() {
-		editor.putString("stored_login_string", loginString);
-		editor.commit();
+		appSharedPreferences.getSharedPreferencesEditor(this).putString("stored_login_string", loginString);
+		appSharedPreferences.getSharedPreferencesEditor(this).commit();
 	}
 	
 	public void removeStoredLoginString() {
-		editor.remove("stored_login_string");
-		editor.commit();
+		appSharedPreferences.getSharedPreferencesEditor(this).remove("stored_login_string");
+		appSharedPreferences.getSharedPreferencesEditor(this).commit();
 	}
 	
 	public void removeStoredUsername() {
-		editor.remove("stored_usernameg");
-		editor.commit();
+		appSharedPreferences.getSharedPreferencesEditor(this).remove("stored_usernameg");
+		appSharedPreferences.getSharedPreferencesEditor(this).commit();
 	}
 	
 	/**
@@ -168,8 +157,7 @@ public class ProfileActivity extends Activity {
 	 * @return String stored username, or empty string if nothing found
 	 */
 	public String getStoredUsername() {
-		SharedPreferences mySharedPreferences = getSharedPreferences("mySharedPreferences", Activity.MODE_PRIVATE);
-		return mySharedPreferences.getString("stored_username", "");
+		return appSharedPreferences.getSharedPreferences(this).getString("stored_username", "");
 	}
 	
 	/**
@@ -177,8 +165,7 @@ public class ProfileActivity extends Activity {
 	 * @return String stored login string, or empty string if nothing found
 	 */
 	public String getStoredLoginString() {
-		SharedPreferences mySharedPreferences = getSharedPreferences("mySharedPreferences", Activity.MODE_PRIVATE);
-		return mySharedPreferences.getString("stored_login_string", "");
+		return appSharedPreferences.getSharedPreferences(this).getString("stored_login_string", "");
 	}
 	
 	public class AsyncTaskParseJson extends AsyncTask<String, String, String> {
@@ -194,7 +181,7 @@ public class ProfileActivity extends Activity {
 	
 	    @Override
 	    protected String doInBackground(String... arg0) {
-	    	Log.d("ProfileActivity", "Started background process to load user");
+	    	Log.d(TAG, "Started background process to load user");
 
 			final User loadedUser = User.getUserWithName(username);
 

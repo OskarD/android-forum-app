@@ -1,15 +1,7 @@
 package me.oskard.finalproject;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,7 +13,16 @@ import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 public class LoginActivity extends Activity {
+
+	final String TAG = "LoginActivity.java";
 	
 	public EditText
 		username,
@@ -33,9 +34,11 @@ public class LoginActivity extends Activity {
 	public Button
 		loginButton;
 
+	private AppSharedPreferences appSharedPreferences = new AppSharedPreferences();
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		Log.d("LoginActivity", "onCreate start");
+		Log.d(TAG, "onCreate start");
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
 		
@@ -47,7 +50,7 @@ public class LoginActivity extends Activity {
 		// Get stored username if available
 		Intent intent = getIntent();
 		String storedName = intent.getStringExtra("stored_username");
-		Log.d("LoginActivity", "Stored username: " + storedName);
+		Log.d(TAG, "Stored username: " + storedName);
 		
 		if(storedName != null)
 			username.setText(storedName);
@@ -75,7 +78,7 @@ public class LoginActivity extends Activity {
 	}
 	
 	public void goRegisterPressed(View v) {
-		Log.d("LoginActivity", "Login text pressed, starting RegisterActivity and finishing LoginActivity...");
+		Log.d(TAG, "Login text pressed, starting RegisterActivity and finishing LoginActivity...");
 		
 		// Load register activity
 		Intent intent = new Intent(this, RegisterActivity.class);
@@ -84,8 +87,8 @@ public class LoginActivity extends Activity {
 	}
 	
 	public void loginPressed(View v) {
-		Log.d("LoginActivity", "Login-button pressed");
-		Log.d("LoginActivity", "Username: " + username.getText());
+		Log.d(TAG, "Login-button pressed");
+		Log.d(TAG, "Username: " + username.getText());
 		
 		// Disable stuff
 		username.setEnabled(false);
@@ -100,21 +103,17 @@ public class LoginActivity extends Activity {
 		if(loggedIn) {
 			Toast.makeText(LoginActivity.this, "Login succeded!", Toast.LENGTH_LONG).show();
 			
-			SharedPreferences mySharedPreferences = getSharedPreferences("mySharedPreferences", Activity.MODE_PRIVATE);
-			
-			SharedPreferences.Editor editor = mySharedPreferences.edit();
-			
 			if(rememberUsername.isChecked()) {
-				Log.d("LoginActivity", "Remember username switch is turned on, saving stored_username in shared preferences");
-				editor.putString("stored_username", username.getText().toString().trim());
+				Log.d(TAG, "Remember username switch is turned on, saving stored_username in shared preferences");
+				appSharedPreferences.getSharedPreferencesEditor(this).putString("stored_username", username.getText().toString().trim());
 			}
 			else {
-				Log.d("LoginActivity", "Remember username switch is turned off, deleting stored_username from shared preferences");
-				editor.remove("stored_username");
+				Log.d(TAG, "Remember username switch is turned off, deleting stored_username from shared preferences");
+				appSharedPreferences.getSharedPreferencesEditor(this).remove("stored_username");
 			}
-			editor.commit();
+			appSharedPreferences.getSharedPreferencesEditor(this).commit();
 			
-			Log.d("LoginActivity", "Starting intent ProfileActivity, finishing LoginActivity...");
+			Log.d(TAG, "Starting intent ProfileActivity, finishing LoginActivity...");
 			Intent intent = new Intent(this, ProfileActivity.class);
 			intent.putExtra("username", username.getText().toString().trim());
 			startActivity(intent);
@@ -169,7 +168,7 @@ public class LoginActivity extends Activity {
 				e.printStackTrace();
 			}
 	    	
-	    	Log.d("LoginActivity", "url: " + yourJsonStringUrl);
+	    	Log.d(TAG, "url: " + yourJsonStringUrl);
 	
 	        // instantiate our json parser
 			JsonParser jParser = new JsonParser();
@@ -177,16 +176,16 @@ public class LoginActivity extends Activity {
 			// get json string from url
 			JSONObject json = jParser.getJSONFromUrl(yourJsonStringUrl);
 
-			Log.d("LoginActivity", "JSON: " + json.toString());
+			Log.d(TAG, "JSON: " + json.toString());
 			
 			// Attempt login
-			Log.d("LoginActivity", "Username entered: " + name);
+			Log.d(TAG, "Username entered: " + name);
 			
 			User user = new User();
 			String result;
 			
 			try {
-				Log.d("LoginActivity", "Username returned: " + json.getString(TAG_NAME));
+				Log.d(TAG, "Username returned: " + json.getString(TAG_NAME));
 				
 				user = new User(
 						json.getInt(TAG_ID),
@@ -197,10 +196,10 @@ public class LoginActivity extends Activity {
 						json.optInt(TAG_AVATAR)
 				);
 				
-				Log.d("LoginActivity", "User loaded: " + user.toString());
+				Log.d(TAG, "User loaded: " + user.toString());
 			} catch (JSONException e) {
-				Log.d("LoginActivity", "The user could not be loaded. Probably doesn't exist, or no internet connection");
-				Log.d("LoginActivity", "Exception thrown: " + e.getMessage());
+				Log.d(TAG, "The user could not be loaded. Probably doesn't exist, or no internet connection");
+				Log.d(TAG, "Exception thrown: " + e.getMessage());
 				runOnUiThread(new Runnable() {
 				     @Override
 				     public void run() {
@@ -212,11 +211,11 @@ public class LoginActivity extends Activity {
 			String pass = MD5.getMD5(password.getText().toString().trim()); // Password is encrypted before added to loginString, where it is encrypted once more
 			String loginString = MD5.getMD5(name.concat(pass));
 			
-			Log.d("LoginActivity", "User loginString: " + loginString);
-			Log.d("LoginActivity", "DB loginString: " + user.getLoginString());
+			Log.d(TAG, "User loginString: " + loginString);
+			Log.d(TAG, "DB loginString: " + user.getLoginString());
 			
 			if(user.getLoginString() != null && user.getLoginString().compareTo(loginString) == 0) {
-				Log.d("LoginActivity", "User/password matched!");
+				Log.d(TAG, "User/password matched!");
 				
 				runOnUiThread(new Runnable() {
 				     @Override
@@ -226,7 +225,7 @@ public class LoginActivity extends Activity {
 				});
 			}
 			else {
-				Log.d("LoginActivity", "User/password didn't match.");
+				Log.d(TAG, "User/password didn't match.");
 				runOnUiThread(new Runnable() {
 				     @Override
 				     public void run() {

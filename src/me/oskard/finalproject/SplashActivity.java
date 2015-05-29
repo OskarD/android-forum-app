@@ -1,14 +1,5 @@
 package me.oskard.finalproject;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import me.oskard.finalproject.SplashActivity.AsyncTaskParseJson;
-import me.oskard.finalproject.util.SystemUiHider;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
@@ -23,6 +14,15 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
+import me.oskard.finalproject.util.SystemUiHider;
+
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
@@ -30,6 +30,10 @@ import android.view.View;
  * @see SystemUiHider
  */
 public class SplashActivity extends Activity {
+	final String TAG = "SplashActivity.java";
+
+	private AppSharedPreferences appSharedPreferences = new AppSharedPreferences();;
+
 	/**
 	 * Whether or not the system UI should be auto-hidden after
 	 * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
@@ -191,23 +195,25 @@ public class SplashActivity extends Activity {
 	 * Perform background-actions for startup
 	 */
 	public boolean processStartup() {
-		Log.d("SplashActivity", "STARTED");
+		Log.d(TAG, "STARTED");
 		
 		// Check if a username is stored
 		storedUsername = getStoredUsername();
 		storedLoginString = getStoredLoginString();
-		Log.d("SplashActivity", "Stored username: " + storedUsername);
-		Log.d("SplashActivity", "Stored loginString: " + storedLoginString);
+		Log.d(TAG, "Stored username: " + storedUsername);
+		Log.d(TAG, "Stored loginString: " + storedLoginString);
 		
 		if(storedUsername.length() > 0) {
 			// Attempt automatic login
 			if(storedLoginString.length() > 0) {
-				Log.d("SplashActivity", "Stored login string is available, attempting to automatically login...");
-				
+				Log.d(TAG, "Stored login string is available, attempting to automatically login...");
+
+				// Start process to automatically log in. It will run while the user is directed to the login page
+				// and if it works, the user will be redirected automatically
 				attemptAutoLogin();
 			}
-			
-			Log.d("SplashActivity", "Stored username is available, starting LoginActivity and finishing SplashActivity...");
+
+			Log.d(TAG, "Stored username is available, starting LoginActivity and finishing SplashActivity...");
 			
 			// Load login activity with saved username
 			Intent intent = new Intent(this, LoginActivity.class);
@@ -244,11 +250,11 @@ public class SplashActivity extends Activity {
 	}
 	
 	public void startLoginRegisterActivity() {
-		Log.d("SplashActivity", "Starting LoginRegisterActivity...");
+		Log.d(TAG, "Starting LoginRegisterActivity...");
 		// Load login/register activity
 		Intent intent = new Intent(this, LoginRegisterActivity.class);
 		startActivity(intent);
-		Log.d("SplashActivity", "Finishing SplashActivity...");
+		Log.d(TAG, "Finishing SplashActivity...");
 		finish();
 	}
 	
@@ -262,23 +268,21 @@ public class SplashActivity extends Activity {
 	
 	public void autoLoginFinish(User user) {
 		if(user == null) {
-			Log.d("SplashActivity", "Could not get user with the name. Probably no internet connection.");
+			Log.d(TAG, "Could not get user with the name. Probably no internet connection.");
 			
 			startLoginRegisterActivity();
 		}
 		else if(storedLoginString.compareTo(user.getLoginString()) != 0) {// Compare loginstrings
-			Log.d("SplashActivity", "Stored login strings does not match DB, removing stored login string.");
+			Log.d(TAG, "Stored login strings does not match DB, removing stored login string.");
 			
 			// Remove stored login string
-			SharedPreferences mySharedPreferences = getSharedPreferences("mySharedPreferences", Activity.MODE_PRIVATE);
-			SharedPreferences.Editor editor = mySharedPreferences.edit();
-			editor.remove("stored_login_string");
-			editor.commit();
+			appSharedPreferences.getSharedPreferencesEditor(this).remove("stored_login_string");
+			appSharedPreferences.getSharedPreferencesEditor(this).commit();
 			
 			processStartup();
 		}
 		else {
-			Log.d("SplashActivity", "attemptAutoLogin succeeded, starting SplashActivity and finishing SplashActivity...");
+			Log.d(TAG, "attemptAutoLogin succeeded, starting SplashActivity and finishing SplashActivity...");
 			Intent intent = new Intent(this, ProfileActivity.class);
 			intent.putExtra("username", storedUsername);
 			startActivity(intent);
@@ -291,8 +295,8 @@ public class SplashActivity extends Activity {
 	 * @return String stored username, or empty string if nothing found
 	 */
 	public String getStoredUsername() {
-		SharedPreferences mySharedPreferences = getSharedPreferences("mySharedPreferences", Activity.MODE_PRIVATE);
-		return mySharedPreferences.getString("stored_username", "");
+		SharedPreferences test = appSharedPreferences.getSharedPreferences(this);
+		return test.getString("stored_username", "");
 	}
 	
 	/**
@@ -300,8 +304,7 @@ public class SplashActivity extends Activity {
 	 * @return String stored login string, or empty string if nothing found
 	 */
 	public String getStoredLoginString() {
-		SharedPreferences mySharedPreferences = getSharedPreferences("mySharedPreferences", Activity.MODE_PRIVATE);
-		return mySharedPreferences.getString("stored_login_string", "");
+		return appSharedPreferences.getSharedPreferences(this).getString("stored_login_string", "");
 	}
 	
 	public class AsyncTaskParseJson extends AsyncTask<String, String, String> {
@@ -334,7 +337,7 @@ public class SplashActivity extends Activity {
 	
 	    @Override
 	    protected String doInBackground(String... arg0) {
-	    	Log.d("SplashActivity", "Started background process");
+	    	Log.d(TAG, "Started background process");
 	    	name = storedUsername;
 	    	
 	    	try {
@@ -344,7 +347,7 @@ public class SplashActivity extends Activity {
 				e.printStackTrace();
 			}
 	    	
-	    	Log.d("SplashActivity", "url: " + yourJsonStringUrl);
+	    	Log.d(TAG, "url: " + yourJsonStringUrl);
 	
 	        // instantiate our json parser
 			JsonParser jParser = new JsonParser();
@@ -352,13 +355,13 @@ public class SplashActivity extends Activity {
 			// get json string from url
 			JSONObject json = jParser.getJSONFromUrl(yourJsonStringUrl);
 
-			Log.d("SplashActivity", "JSON: " + json.toString());
+			Log.d(TAG, "JSON: " + json.toString());
 			
 			// Attempt login
-			Log.d("SplashActivity", "Username entered: " + name);
+			Log.d(TAG, "Username entered: " + name);
 			
 			try {
-				Log.d("SplashActivity", "Username returned: " + json.getString(TAG_NAME));
+				Log.d(TAG, "Username returned: " + json.getString(TAG_NAME));
 				
 				final User user = new User(
 						json.getInt(TAG_ID),
@@ -378,9 +381,9 @@ public class SplashActivity extends Activity {
 				    }
 				});
 				
-				Log.d("SplashActivity", "User loaded: " + user.toString());
+				Log.d(TAG, "User loaded: " + user.toString());
 			} catch (JSONException e) {
-				Log.d("SplashActivity", "The user could not be loaded. Probably doesn't exist, or there is no internet connection");
+				Log.d(TAG, "The user could not be loaded. Probably doesn't exist, or there is no internet connection");
 				runOnUiThread(new Runnable() {
 				     @Override
 				     public void run() {

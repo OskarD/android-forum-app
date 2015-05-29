@@ -9,6 +9,8 @@ import android.view.MenuItem;
 import android.view.View;
 
 public class LoginRegisterActivity extends Activity {
+	final String TAG = "LoginRegisterActivity.j";
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -38,7 +40,7 @@ public class LoginRegisterActivity extends Activity {
 	}
 	
 	public void loginPressed(View v) {
-		Log.d("LoginRegisterActivity", "Login-button pressed, starting LoginActivity...");
+		Log.d(TAG, "Login-button pressed, starting LoginActivity...");
 		
 		// Load login activity
 		Intent intent = new Intent(this, LoginActivity.class);
@@ -46,7 +48,7 @@ public class LoginRegisterActivity extends Activity {
 	}
 	
 	public void registerPressed(View v) {
-		Log.d("LoginRegisterActivity", "Register-button pressed, starting RegisterActivity");
+		Log.d(TAG, "Register-button pressed, starting RegisterActivity");
 		
 		// Load register activity
 		Intent intent = new Intent(this, RegisterActivity.class);
