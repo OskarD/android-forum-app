@@ -140,7 +140,7 @@ public class RegisterActivity extends Activity {
 			Toast.makeText(this, "Account has been registered!", Toast.LENGTH_LONG).show();
 
 			Intent intent = new Intent(this, LoginActivity.class);
-			intent.putExtra("stored_username", username.getText().toString());
+			intent.putExtra(AppSharedPreferences.TAG_STORED_USERNAME, username.getText().toString());
 			startActivity(intent);
 
 			finish();

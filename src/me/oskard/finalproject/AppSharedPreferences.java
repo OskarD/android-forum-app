@@ -9,7 +9,10 @@ import android.content.SharedPreferences;
  */
 public class AppSharedPreferences {
 
-    public static final String DEFAULT_SHARED_PREFS = "mySharedPreferences";
+    public static final String
+            DEFAULT_SHARED_PREFS        = "mySharedPreferences",
+            TAG_STORED_USERNAME         = "stored_username",
+            TAG_STORED_LOGIN_STRING     = "stored_login_string";
 
     private SharedPreferences sharedPreferences;
 

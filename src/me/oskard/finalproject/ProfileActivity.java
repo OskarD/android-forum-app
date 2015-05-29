@@ -133,22 +133,22 @@ public class ProfileActivity extends Activity {
 	}
 	
 	public void setStoredUsername() {
-		appSharedPreferences.getSharedPreferencesEditor(this).putString("stored_username", getStoredUsername());
+		appSharedPreferences.getSharedPreferencesEditor(this).putString(AppSharedPreferences.TAG_STORED_USERNAME, getStoredUsername());
 		appSharedPreferences.getSharedPreferencesEditor(this).commit();
 	}
 	
 	public void setStoredLoginString() {
-		appSharedPreferences.getSharedPreferencesEditor(this).putString("stored_login_string", loginString);
+		appSharedPreferences.getSharedPreferencesEditor(this).putString(AppSharedPreferences.TAG_STORED_LOGIN_STRING, loginString);
 		appSharedPreferences.getSharedPreferencesEditor(this).commit();
 	}
 	
 	public void removeStoredLoginString() {
-		appSharedPreferences.getSharedPreferencesEditor(this).remove("stored_login_string");
+		appSharedPreferences.getSharedPreferencesEditor(this).remove(AppSharedPreferences.TAG_STORED_LOGIN_STRING);
 		appSharedPreferences.getSharedPreferencesEditor(this).commit();
 	}
 	
 	public void removeStoredUsername() {
-		appSharedPreferences.getSharedPreferencesEditor(this).remove("stored_usernameg");
+		appSharedPreferences.getSharedPreferencesEditor(this).remove(AppSharedPreferences.TAG_STORED_USERNAME);
 		appSharedPreferences.getSharedPreferencesEditor(this).commit();
 	}
 	
@@ -157,7 +157,7 @@ public class ProfileActivity extends Activity {
 	 * @return String stored username, or empty string if nothing found
 	 */
 	public String getStoredUsername() {
-		return appSharedPreferences.getSharedPreferences(this).getString("stored_username", "");
+		return appSharedPreferences.getSharedPreferences(this).getString(AppSharedPreferences.TAG_STORED_USERNAME, "");
 	}
 	
 	/**
@@ -165,7 +165,7 @@ public class ProfileActivity extends Activity {
 	 * @return String stored login string, or empty string if nothing found
 	 */
 	public String getStoredLoginString() {
-		return appSharedPreferences.getSharedPreferences(this).getString("stored_login_string", "");
+		return appSharedPreferences.getSharedPreferences(this).getString(AppSharedPreferences.TAG_STORED_LOGIN_STRING, "");
 	}
 	
 	public class AsyncTaskParseJson extends AsyncTask<String, String, String> {

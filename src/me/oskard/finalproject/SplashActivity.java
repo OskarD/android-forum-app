@@ -217,7 +217,7 @@ public class SplashActivity extends Activity {
 			
 			// Load login activity with saved username
 			Intent intent = new Intent(this, LoginActivity.class);
-			intent.putExtra("stored_username", storedUsername);
+			intent.putExtra(AppSharedPreferences.TAG_STORED_USERNAME, storedUsername);
 			startActivity(intent);
 			
 			finish();
@@ -276,7 +276,7 @@ public class SplashActivity extends Activity {
 			Log.d(TAG, "Stored login strings does not match DB, removing stored login string.");
 			
 			// Remove stored login string
-			appSharedPreferences.getSharedPreferencesEditor(this).remove("stored_login_string");
+			appSharedPreferences.getSharedPreferencesEditor(this).remove(AppSharedPreferences.TAG_STORED_LOGIN_STRING);
 			appSharedPreferences.getSharedPreferencesEditor(this).commit();
 			
 			processStartup();
@@ -296,7 +296,7 @@ public class SplashActivity extends Activity {
 	 */
 	public String getStoredUsername() {
 		SharedPreferences test = appSharedPreferences.getSharedPreferences(this);
-		return test.getString("stored_username", "");
+		return test.getString(AppSharedPreferences.TAG_STORED_USERNAME, "");
 	}
 	
 	/**
@@ -304,7 +304,7 @@ public class SplashActivity extends Activity {
 	 * @return String stored login string, or empty string if nothing found
 	 */
 	public String getStoredLoginString() {
-		return appSharedPreferences.getSharedPreferences(this).getString("stored_login_string", "");
+		return appSharedPreferences.getSharedPreferences(this).getString(AppSharedPreferences.TAG_STORED_LOGIN_STRING, "");
 	}
 	
 	public class AsyncTaskParseJson extends AsyncTask<String, String, String> {

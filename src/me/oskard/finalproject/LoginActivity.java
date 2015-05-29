@@ -49,7 +49,7 @@ public class LoginActivity extends Activity {
 		
 		// Get stored username if available
 		Intent intent = getIntent();
-		String storedName = intent.getStringExtra("stored_username");
+		String storedName = intent.getStringExtra(AppSharedPreferences.TAG_STORED_USERNAME);
 		Log.d(TAG, "Stored username: " + storedName);
 		
 		if(storedName != null)
@@ -105,11 +105,11 @@ public class LoginActivity extends Activity {
 			
 			if(rememberUsername.isChecked()) {
 				Log.d(TAG, "Remember username switch is turned on, saving stored_username in shared preferences");
-				appSharedPreferences.getSharedPreferencesEditor(this).putString("stored_username", username.getText().toString().trim());
+				appSharedPreferences.getSharedPreferencesEditor(this).putString(AppSharedPreferences.TAG_STORED_USERNAME, username.getText().toString().trim());
 			}
 			else {
 				Log.d(TAG, "Remember username switch is turned off, deleting stored_username from shared preferences");
-				appSharedPreferences.getSharedPreferencesEditor(this).remove("stored_username");
+				appSharedPreferences.getSharedPreferencesEditor(this).remove(AppSharedPreferences.TAG_STORED_USERNAME);
 			}
 			appSharedPreferences.getSharedPreferencesEditor(this).commit();
 			
